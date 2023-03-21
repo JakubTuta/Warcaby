@@ -25,33 +25,17 @@ public class Checkers  extends JPanel implements MouseListener{
     int timerGraczBialy = 0;
     int timerGraczCzarny = 0;
 
-    ServerSocket serverSocket = null;
-    Socket clientSocket = null;
     PrintWriter out;
     ObjectOutputStream outWarcaby;
     BufferedReader in;
     ObjectInputStream inWarcaby;
 
-    Checkers() {
-        System.out.println("Tworzenie hosta");
-        try {
-            serverSocket = new ServerSocket(2137);
-        } catch (IOException e) {
-            System.out.println("Nie udało się utworzyć serwera");
-            System.out.println("Koniec programu");
-            exit(1);
-        }
-        System.out.println("Utworzono hosta");
-
-        System.out.println("Łączenie z klientem");
-        try {
-            clientSocket = serverSocket.accept();
-        } catch (IOException e) {
-            System.out.println("Nie udało się połączyć z serwerem");
-            System.out.println("Koniec programu");
-            exit(1);
-        }
-        System.out.println("Połączono z klientem");
+    Checkers(PrintWriter out, ObjectOutputStream outWarcaby, BufferedReader in, ObjectInputStream inWarcaby) {
+        System.out.println("xdd");
+        this.out = out;
+        this.outWarcaby = outWarcaby;
+        this.in = in;
+        this.inWarcaby = inWarcaby;
 
         this.addMouseListener(this);
         this.setPreferredSize(new Dimension(GAME_SIZE, GAME_SIZE));
@@ -77,11 +61,6 @@ public class Checkers  extends JPanel implements MouseListener{
         }
 
         try {
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            inWarcaby = new ObjectInputStream(clientSocket.getInputStream());
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-            outWarcaby = new ObjectOutputStream(clientSocket.getOutputStream());
-
             out.println("Start");
             outWarcaby.writeObject(warcaby);
 //            kolor przeciwnika
