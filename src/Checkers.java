@@ -77,8 +77,11 @@ public class Checkers  extends JPanel implements MouseListener{
         }
 
         try {
-            out = new PrintWriter(clientSocket.getOutputStream());
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            inWarcaby = new ObjectInputStream(clientSocket.getInputStream());
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
             outWarcaby = new ObjectOutputStream(clientSocket.getOutputStream());
+
             out.println("Start");
             outWarcaby.writeObject(warcaby);
 //            kolor przeciwnika
