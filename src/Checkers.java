@@ -11,84 +11,60 @@ import static java.lang.System.exit;
 
 public class Checkers  extends JPanel implements MouseListener{
     final int GAME_SIZE = 700;
-    final int ROWS_COLS = 8;
-    final int tileSize = GAME_SIZE / ROWS_COLS;
-    ArrayList<Warcab> warcaby = new ArrayList<>();
+    int ROWS_COLS;
+    int tileSize;
+    ArrayList<Warcab> warcaby;
     ArrayList<Pair> neighbors;
     boolean showPossibleMoves = false;
     Pair mouseStart = new Pair(0, 0);
     Pair mouseEnd = new Pair(0, 0);
 
-    String czyjaTura = "bialy";
-    String twojKolor = "bialy";
+    String czyjaTura;
+    String twojKolor;
     Timer timer;
     int timerGraczBialy = 0;
     int timerGraczCzarny = 0;
 
-    ServerSocket serverSocket = null;
-    Socket clientSocket = null;
+    Socket socket;
     PrintWriter out;
     ObjectOutputStream outWarcaby;
     BufferedReader in;
     ObjectInputStream inWarcaby;
 
     Checkers() {
-        System.out.println("Tworzenie hosta");
+        System.out.println("Łączenie z hostem");
         try {
-            serverSocket = new ServerSocket(2137);
+            socket = new Socket("10.7.110.190", 2137);
+        } catch (UnknownHostException e) {
+            System.out.println("Nie znaleziono hosta");
+            exit(1);
         } catch (IOException e) {
-            System.out.println("Nie udało się utworzyć serwera");
-            System.out.println("Koniec programu");
+            System.out.println("Nie udało się połączyć z hostem");
             exit(1);
         }
-        System.out.println("Utworzono hosta");
-
-        System.out.println("Łączenie z klientem");
-        try {
-            clientSocket = serverSocket.accept();
-        } catch (IOException e) {
-            System.out.println("Nie udało się połączyć z serwerem");
-            System.out.println("Koniec programu");
-            exit(1);
-        }
-        System.out.println("Połączono z klientem");
+        System.out.println("Połączono z hostem");
 
         this.addMouseListener(this);
         this.setPreferredSize(new Dimension(GAME_SIZE, GAME_SIZE));
         timer = new Timer();
         timer.scheduleAtFixedRate(new Task(), 0, 1000);
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < ROWS_COLS; j++) {
-                if ((i + j) % 2 != 0) {
-                    warcaby.add(new Warcab(j, i, "czarny"));
-                    Warcab.changeNum(1, "czarny");
-                }
-            }
-        }
-
-        for (int i = ROWS_COLS - 3; i < ROWS_COLS; i++) {
-            for (int j = 0; j < ROWS_COLS; j++) {
-                if ((i + j) % 2 != 0) {
-                    warcaby.add(new Warcab(j, i, "bialy"));
-                    Warcab.changeNum(1, "bialy");
-                }
-            }
-        }
-
         try {
-            out = new PrintWriter(clientSocket.getOutputStream());
-            outWarcaby = new ObjectOutputStream(clientSocket.getOutputStream());
-            out.println("Start");
-            outWarcaby.writeObject(warcaby);
-//            kolor przeciwnika
-            if (twojKolor.equals("bialy")) {
-                out.println("czarny");
-            } else {
-                out.println("bialy");
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            inWarcaby = new ObjectInputStream(socket.getInputStream());
+            out = new PrintWriter(socket.getOutputStream(), true);
+            outWarcaby = new ObjectOutputStream(socket.getOutputStream());
+
+            String wejscie = in.readLine();
+            if(!wejscie.equals("Start")) {
+                System.out.println("Nie udało się odczytać danych");
+                System.out.println("Koniec programu");
+                exit(1);
             }
-            out.println(czyjaTura);
-        } catch (IOException e) {
+            warcaby = (ArrayList<Warcab>) inWarcaby.readObject();
+            twojKolor = in.readLine();
+            czyjaTura = in.readLine();
+        } catch (IOException | ClassNotFoundException e) {
             System.out.println("Nie udało się wysłać danych");
             System.out.println("Koniec programu");
             exit(1);
@@ -363,12 +339,8 @@ public class Checkers  extends JPanel implements MouseListener{
                     return;
                 }
                 warcaby = (ArrayList<Warcab>) inWarcaby.readObject();
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 System.out.println("Nie udało się odczytać danych");
-                System.out.println("Koniec programu");
-                exit(1);
-            } catch (ClassNotFoundException e) {
-                System.out.println("Niepoprawne dane");
                 System.out.println("Koniec programu");
                 exit(1);
             }
