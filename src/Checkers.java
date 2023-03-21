@@ -175,9 +175,9 @@ public class Checkers  extends JPanel implements MouseListener{
 
                 if (Warcab.isGameOver()) {
                     if (Warcab.numOfWhites == 0) {
-                        System.out.println("Biały wygrał");
-                    } else {
                         System.out.println("Czarny wygrał");
+                    } else {
+                        System.out.println("Bialy wygrał");
                     }
                 }
             }
