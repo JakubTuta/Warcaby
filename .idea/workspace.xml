@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6e80daee-9b07-41c5-96dd-83df6675312f" name="Changes" comment="First commit">
+    <list default="true" id="6e80daee-9b07-41c5-96dd-83df6675312f" name="Changes" comment="działa multiplayer">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Checkers.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Checkers.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Warcab.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Warcab.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,6 +36,8 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "vue.rearranger.settings.migration": "true"
   }
@@ -63,6 +67,7 @@
       <workItem from="1679343783837" duration="221000" />
       <workItem from="1679349112903" duration="5000" />
       <workItem from="1679400369393" duration="4636000" />
+      <workItem from="1679526158638" duration="550000" />
     </task>
     <task id="LOCAL-00001" summary="First commit">
       <created>1679343951450</created>
@@ -78,7 +83,14 @@
       <option name="project" value="LOCAL" />
       <updated>1679404246483</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="działa multiplayer">
+      <created>1679515234885</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1679515234885</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -109,6 +121,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="First commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="First commit" />
+    <MESSAGE value="działa multiplayer" />
+    <option name="LAST_COMMIT_MESSAGE" value="działa multiplayer" />
   </component>
 </project>
