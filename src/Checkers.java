@@ -9,15 +9,15 @@ import java.io.*;
 import java.net.*;
 import static java.lang.System.exit;
 
-public class Checkers  extends JPanel implements MouseListener{
+public class Checkers extends JPanel implements MouseListener{
     final int GAME_SIZE = 700;
     final int ROWS_COLS = 8;
     final int tileSize = GAME_SIZE / ROWS_COLS;
     ArrayList<Warcab> warcaby = new ArrayList<>();
     ArrayList<Pair> neighbors;
     boolean showPossibleMoves = false;
-    Pair mouseStart = new Pair(0, 0);
-    Pair mouseEnd = new Pair(0, 0);
+    Pair mouseStart = new Pair(-1, -1);
+    Pair mouseEnd = new Pair(-1, -1);
 
     String czyjaTura = "bialy";
     String twojKolor = "bialy";
@@ -25,22 +25,31 @@ public class Checkers  extends JPanel implements MouseListener{
     int timerGraczBialy = 0;
     int timerGraczCzarny = 0;
 
-    PrintWriter out;
-    ObjectOutputStream outWarcaby;
-    BufferedReader in;
-    ObjectInputStream inWarcaby;
+    ServerSocket serverSocket = null;
+    Socket clientSocket = null;
+    PrintWriter out = null;
+    BufferedReader in = null;
 
-    Checkers(PrintWriter out, ObjectOutputStream outWarcaby, BufferedReader in, ObjectInputStream inWarcaby) {
-        System.out.println("xdd");
-        this.out = out;
-        this.outWarcaby = outWarcaby;
-        this.in = in;
-        this.inWarcaby = inWarcaby;
+    Checkers() {
+        System.out.println("Tworzenie hosta");
+        try {
+            serverSocket = new ServerSocket(2137);
+        } catch (IOException e) {
+            System.out.println("Nie udało się utworzyć serwera");
+            System.out.println("Koniec programu");
+            exit(1);
+        }
+        System.out.println("Utworzono hosta");
 
-        this.addMouseListener(this);
-        this.setPreferredSize(new Dimension(GAME_SIZE, GAME_SIZE));
-        timer = new Timer();
-        timer.scheduleAtFixedRate(new Task(), 0, 1000);
+        System.out.println("Łączenie z klientem");
+        try {
+            clientSocket = serverSocket.accept();
+        } catch (IOException e) {
+            System.out.println("Nie udało się połączyć z serwerem");
+            System.out.println("Koniec programu");
+            exit(2);
+        }
+        System.out.println("Połączono z klientem");
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < ROWS_COLS; j++) {
@@ -61,8 +70,16 @@ public class Checkers  extends JPanel implements MouseListener{
         }
 
         try {
-            out.println("Start");
-            outWarcaby.writeObject(warcaby);
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
+
+            out.println("Start program");
+            out.println(warcaby.size());
+            for(Warcab war : warcaby) {
+                out.println(war.getPair().x);
+                out.println(war.getPair().y);
+                out.println(war.color);
+            }
 //            kolor przeciwnika
             if (twojKolor.equals("bialy")) {
                 out.println("czarny");
@@ -70,11 +87,18 @@ public class Checkers  extends JPanel implements MouseListener{
                 out.println("bialy");
             }
             out.println(czyjaTura);
+            out.println(ROWS_COLS);
         } catch (IOException e) {
             System.out.println("Nie udało się wysłać danych");
             System.out.println("Koniec programu");
-            exit(1);
+            exit(3);
         }
+
+        this.addMouseListener(this);
+        this.setPreferredSize(new Dimension(GAME_SIZE, GAME_SIZE));
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new LiczenieCzasu(), 0, 1000);
+        timer.scheduleAtFixedRate(new CzytanieBufora(), 0, 500);
     }
 
     @Override
@@ -186,7 +210,6 @@ public class Checkers  extends JPanel implements MouseListener{
                 if (war.getPair().equals(mouseStart)) {
                     warcaby.remove(war);
                     warcaby.add(new Warcab(mouseEnd.x, mouseEnd.y, war.color));
-                    nowaTura();
                     break;
                 }
             }
@@ -203,27 +226,17 @@ public class Checkers  extends JPanel implements MouseListener{
                         break;
                     }
                 }
-
-                if (Warcab.isGameOver()) {
-                    if (Warcab.numOfWhites == 0) {
-                        System.out.println("Biały wygrał");
-                    } else {
-                        System.out.println("Czarny wygrał");
-                    }
-                }
-
-                printData();
             }
+            if (Warcab.isGameOver()) {
+                if (Warcab.numOfWhites == 0) {
+                    System.out.println("Biały wygrał");
+                } else {
+                    System.out.println("Czarny wygrał");
+                }
+            }
+            printData();
         }
         repaint();
-    }
-
-    private void nowaTura() {
-        if (czyjaTura.equals("bialy")) {
-            czyjaTura = "czarny";
-        } else if (czyjaTura.equals("czarny")) {
-            czyjaTura = "bialy";
-        }
     }
 
     @Override
@@ -329,7 +342,7 @@ public class Checkers  extends JPanel implements MouseListener{
         return neighbors;
     }
 
-    private class Task extends TimerTask {
+    private class LiczenieCzasu extends TimerTask {
         @Override
         public void run() {
             if (czyjaTura.equals("bialy")) {
@@ -337,23 +350,41 @@ public class Checkers  extends JPanel implements MouseListener{
             } else {
                 timerGraczCzarny++;
             }
+            out.println("Czas");
+            out.println(timerGraczBialy);
+            out.println(timerGraczCzarny);
             repaint();
+        }
+    }
 
+    private class CzytanieBufora extends TimerTask {
+        @Override
+        public void run() {
             try {
+                if(!in.ready()) {
+                    repaint();
+                    return;
+                }
+
                 String wejscie = in.readLine();
                 if (!wejscie.equals("Start")) {
                     return;
                 }
-                warcaby = (ArrayList<Warcab>) inWarcaby.readObject();
+                int size = Integer.parseInt(in.readLine());
+                warcaby = new ArrayList<>();
+                for (int i = 0; i < size; i++) {
+                    int x = Integer.parseInt(in.readLine());
+                    int y = Integer.parseInt(in.readLine());
+                    String kolor = in.readLine();
+                    warcaby.add(new Warcab(x, y, kolor));
+                }
+                czyjaTura = twojKolor;
             } catch (IOException e) {
                 System.out.println("Nie udało się odczytać danych");
                 System.out.println("Koniec programu");
-                exit(1);
-            } catch (ClassNotFoundException e) {
-                System.out.println("Niepoprawne dane");
-                System.out.println("Koniec programu");
-                exit(1);
+                exit(4);
             }
+            repaint();
         }
     }
 
@@ -368,13 +399,18 @@ public class Checkers  extends JPanel implements MouseListener{
     }
 
     void printData() {
-        try {
-            out.println("Start");
-            outWarcaby.writeObject(warcaby);
-        } catch (IOException e) {
-            System.out.println("Nie udało się wysłać danych");
-            System.out.println("Koniec programu");
-            exit(1);
+        if (twojKolor.equals("bialy")) {
+            czyjaTura = "czarny";
+        } else {
+            czyjaTura = "bialy";
+        }
+
+        out.println("Start");
+        out.println(warcaby.size());
+        for(Warcab war : warcaby) {
+            out.println(war.getPair().x);
+            out.println(war.getPair().y);
+            out.println(war.color);
         }
     }
 }
