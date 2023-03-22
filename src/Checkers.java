@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Checkers  extends JPanel implements MouseListener{
+public class Checkers  extends JPanel implements MouseListener {
     final int GAME_SIZE = 700;
     final int ROWS_COLS = 8;
     final int tileSize = GAME_SIZE / ROWS_COLS;
@@ -194,10 +194,12 @@ public class Checkers  extends JPanel implements MouseListener{
     }
 
     @Override
-    public void mouseEntered(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {
+    }
 
     @Override
-    public void mouseExited(MouseEvent e) {}
+    public void mouseExited(MouseEvent e) {
+    }
 
     private ArrayList<Pair> possibleMoves(Warcab war) {
 
