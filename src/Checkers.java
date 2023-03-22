@@ -16,20 +16,18 @@ public class Checkers  extends JPanel implements MouseListener{
     ArrayList<Warcab> warcaby;
     ArrayList<Pair> neighbors;
     boolean showPossibleMoves = false;
-    Pair mouseStart = new Pair(0, 0);
-    Pair mouseEnd = new Pair(0, 0);
+    Pair mouseStart = new Pair(-1, -1);
+    Pair mouseEnd = new Pair(-1, -1);
 
-    String czyjaTura;
-    String twojKolor;
+    String czyjaTura = "";
+    String twojKolor = "";
     Timer timer;
     int timerGraczBialy = 0;
     int timerGraczCzarny = 0;
 
-    Socket socket;
-    PrintWriter out;
-    ObjectOutputStream outWarcaby;
-    BufferedReader in;
-    ObjectInputStream inWarcaby;
+    Socket socket = null;
+    PrintWriter out = null;
+    BufferedReader in = null;
 
     Checkers() {
         System.out.println("Łączenie z hostem");
@@ -40,35 +38,42 @@ public class Checkers  extends JPanel implements MouseListener{
             exit(1);
         } catch (IOException e) {
             System.out.println("Nie udało się połączyć z hostem");
-            exit(1);
+            exit(2);
         }
         System.out.println("Połączono z hostem");
+
+        try {
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+
+            String wejscie = in.readLine();
+            if(!wejscie.equals("Start program")) {
+                System.out.println("Nie udało się odczytać danych");
+                System.out.println("Koniec programu");
+                exit(3);
+            }
+            int size = Integer.parseInt(in.readLine());
+            warcaby = new ArrayList<>();
+            for(int i = 0; i < size; i++) {
+                int x = Integer.parseInt(in.readLine());
+                int y = Integer.parseInt(in.readLine());
+                String kolor = in.readLine();
+                warcaby.add(new Warcab(x, y, kolor));
+            }
+            twojKolor = in.readLine();
+            czyjaTura = in.readLine();
+            ROWS_COLS = Integer.parseInt(in.readLine());
+            tileSize = GAME_SIZE / ROWS_COLS;
+        } catch (IOException e) {
+            System.out.println("Nie udało się wysłać danych");
+            System.out.println("Koniec programu");
+            exit(4);
+        }
 
         this.addMouseListener(this);
         this.setPreferredSize(new Dimension(GAME_SIZE, GAME_SIZE));
         timer = new Timer();
-        timer.scheduleAtFixedRate(new Task(), 0, 1000);
-
-        try {
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            inWarcaby = new ObjectInputStream(socket.getInputStream());
-            out = new PrintWriter(socket.getOutputStream(), true);
-            outWarcaby = new ObjectOutputStream(socket.getOutputStream());
-
-            String wejscie = in.readLine();
-            if(!wejscie.equals("Start")) {
-                System.out.println("Nie udało się odczytać danych");
-                System.out.println("Koniec programu");
-                exit(1);
-            }
-            warcaby = (ArrayList<Warcab>) inWarcaby.readObject();
-            twojKolor = in.readLine();
-            czyjaTura = in.readLine();
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Nie udało się wysłać danych");
-            System.out.println("Koniec programu");
-            exit(1);
-        }
+        timer.scheduleAtFixedRate(new CzytanieBufora(), 0, 500);
     }
 
     @Override
@@ -180,7 +185,6 @@ public class Checkers  extends JPanel implements MouseListener{
                 if (war.getPair().equals(mouseStart)) {
                     warcaby.remove(war);
                     warcaby.add(new Warcab(mouseEnd.x, mouseEnd.y, war.color));
-                    nowaTura();
                     break;
                 }
             }
@@ -197,27 +201,17 @@ public class Checkers  extends JPanel implements MouseListener{
                         break;
                     }
                 }
-
-                if (Warcab.isGameOver()) {
-                    if (Warcab.numOfWhites == 0) {
-                        System.out.println("Biały wygrał");
-                    } else {
-                        System.out.println("Czarny wygrał");
-                    }
-                }
-
-                printData();
             }
+            if (Warcab.isGameOver()) {
+                if (Warcab.numOfWhites == 0) {
+                    System.out.println("Biały wygrał");
+                } else {
+                    System.out.println("Czarny wygrał");
+                }
+            }
+            printData();
         }
         repaint();
-    }
-
-    private void nowaTura() {
-        if (czyjaTura.equals("bialy")) {
-            czyjaTura = "czarny";
-        } else if (czyjaTura.equals("czarny")) {
-            czyjaTura = "bialy";
-        }
     }
 
     @Override
@@ -323,27 +317,37 @@ public class Checkers  extends JPanel implements MouseListener{
         return neighbors;
     }
 
-    private class Task extends TimerTask {
+    private class CzytanieBufora extends TimerTask {
         @Override
         public void run() {
-            if (czyjaTura.equals("bialy")) {
-                timerGraczBialy++;
-            } else {
-                timerGraczCzarny++;
-            }
-            repaint();
-
             try {
-                String wejscie = in.readLine();
-                if (!wejscie.equals("Start")) {
+                if(!in.ready()) {
+                    repaint();
                     return;
                 }
-                warcaby = (ArrayList<Warcab>) inWarcaby.readObject();
-            } catch (IOException | ClassNotFoundException e) {
+
+                String wejscie = in.readLine();
+                if (wejscie.equals("Start")) {
+                    int size = Integer.parseInt(in.readLine());
+                    warcaby = new ArrayList<>();
+                    for (int i = 0; i < size; i++) {
+                        int x = Integer.parseInt(in.readLine());
+                        int y = Integer.parseInt(in.readLine());
+                        String kolor = in.readLine();
+                        warcaby.add(new Warcab(x, y, kolor));
+                    }
+                    czyjaTura = twojKolor;
+                } else if (wejscie.equals("Czas")) {
+                    timerGraczBialy = Integer.parseInt(in.readLine());
+                    timerGraczCzarny = Integer.parseInt(in.readLine());
+                }
+
+            } catch (IOException e) {
                 System.out.println("Nie udało się odczytać danych");
                 System.out.println("Koniec programu");
-                exit(1);
+                exit(4);
             }
+            repaint();
         }
     }
 
@@ -358,13 +362,18 @@ public class Checkers  extends JPanel implements MouseListener{
     }
 
     void printData() {
-        try {
-            out.println("Start");
-            outWarcaby.writeObject(warcaby);
-        } catch (IOException e) {
-            System.out.println("Nie udało się wysłać danych");
-            System.out.println("Koniec programu");
-            exit(1);
+        if (twojKolor.equals("bialy")) {
+            czyjaTura = "czarny";
+        } else {
+            czyjaTura = "bialy";
+        }
+
+        out.println("Start");
+        out.println(warcaby.size());
+        for(Warcab war : warcaby) {
+            out.println(war.getPair().x);
+            out.println(war.getPair().y);
+            out.println(war.color);
         }
     }
 }
