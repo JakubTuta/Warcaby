@@ -2,6 +2,7 @@ public class Warcab {
     int x, y;
     String color;
     Pair para;
+    boolean damka = false;
     static int numOfWhites = 0;
     static int numOfBlacks = 0;
 

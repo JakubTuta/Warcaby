@@ -27,7 +27,7 @@ public class Checkers  extends JPanel implements MouseListener {
         timer = new Timer();
         timer.scheduleAtFixedRate(new Task(), 0, 1000);
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 1; i++) {
             for (int j = 0; j < ROWS_COLS; j++) {
                 if ((i + j) % 2 != 0) {
                     warcaby.add(new Warcab(j, i, "czarny"));
@@ -36,7 +36,7 @@ public class Checkers  extends JPanel implements MouseListener {
             }
         }
 
-        for (int i = ROWS_COLS - 3; i < ROWS_COLS; i++) {
+        for (int i = ROWS_COLS - 1; i < ROWS_COLS; i++) {
             for (int j = 0; j < ROWS_COLS; j++) {
                 if ((i + j) % 2 != 0) {
                     warcaby.add(new Warcab(j, i, "bialy"));
@@ -74,6 +74,11 @@ public class Checkers  extends JPanel implements MouseListener {
                 g.setColor(bialy_warcab);
             }
             g.fillOval((war.x * tileSize) + offset, (war.y * tileSize) + offset, tileSize - 2 * offset, tileSize - 2 * offset);
+
+            if (war.damka) {
+                g.setColor(Color.yellow);
+                g.fillOval((war.x * tileSize) + (3 * offset), (war.y * tileSize) + (3 * offset), tileSize - (6 * offset), tileSize - (6 * offset));
+            }
         }
 
         if (showPossibleMoves && neighbors != null) {
@@ -153,8 +158,12 @@ public class Checkers  extends JPanel implements MouseListener {
         if (neighbors.contains(mouseEnd)) {
             for (Warcab war : warcaby) {
                 if (war.getPair().equals(mouseStart)) {
+                    Warcab nowyWar = new Warcab(mouseEnd.x, mouseEnd.y, war.color);
+                    if ((war.color.equals("bialy") && mouseEnd.y == 0) || (war.color.equals("czarny") && mouseEnd.y == ROWS_COLS - 1) || war.damka) {
+                        nowyWar.damka = true;
+                    }
                     warcaby.remove(war);
-                    warcaby.add(new Warcab(mouseEnd.x, mouseEnd.y, war.color));
+                    warcaby.add(nowyWar);
                     nowaTura();
                     break;
                 }
@@ -209,6 +218,94 @@ public class Checkers  extends JPanel implements MouseListener {
 
         ArrayList<Pair> neighbors = new ArrayList<>();
         boolean dodajBlizej, dodajDalej;
+
+        if (war.damka) {
+//        1. (x-1, y-1)
+            dodajBlizej = true;
+            dodajDalej = true;
+            for (Warcab warcab : warcaby) {
+                if (warcab.getPair().equals(new Pair(war.x - 1, war.y - 1))) {
+                    dodajBlizej = false;
+                    if (war.color.equals(warcab.color)) {
+                        dodajDalej = false;
+                        break;
+                    }
+                }
+                if (warcab.getPair().equals(new Pair(war.x - 2, war.y - 2))) {
+                    dodajDalej = false;
+                }
+            }
+            if (dodajBlizej) {
+                neighbors.add(new Pair(war.x - 1, war.y - 1));
+            } else if (dodajDalej) {
+                neighbors.add(new Pair(war.x - 2, war.y - 2));
+            }
+
+//        2. (x+1, y-1)
+            dodajBlizej = true;
+            dodajDalej = true;
+            for (Warcab warcab : warcaby) {
+                if (warcab.getPair().equals(new Pair(war.x + 1, war.y - 1))) {
+                    dodajBlizej = false;
+                    if (war.color.equals(warcab.color)) {
+                        dodajDalej = false;
+                        break;
+                    }
+                }
+                if (warcab.getPair().equals(new Pair(war.x + 2, war.y - 2))) {
+                    dodajDalej = false;
+                }
+            }
+            if (dodajBlizej) {
+                neighbors.add(new Pair(war.x + 1, war.y - 1));
+            } else if (dodajDalej) {
+                neighbors.add(new Pair(war.x + 2, war.y - 2));
+            }
+
+            //        3. (x-1, y+1)
+            dodajBlizej = true;
+            dodajDalej = true;
+            for (Warcab warcab : warcaby) {
+                if (warcab.getPair().equals(new Pair(war.x - 1, war.y + 1))) {
+                    dodajBlizej = false;
+                    if (war.color.equals(warcab.color)) {
+                        dodajDalej = false;
+                        break;
+                    }
+                }
+                if (warcab.getPair().equals(new Pair(war.x - 2, war.y + 2))) {
+                    dodajDalej = false;
+                }
+            }
+            if (dodajBlizej) {
+                neighbors.add(new Pair(war.x - 1, war.y + 1));
+            } else if (dodajDalej) {
+                neighbors.add(new Pair(war.x - 2, war.y + 2));
+            }
+
+//        4. (x+1, y+1)
+            dodajBlizej = true;
+            dodajDalej = true;
+            for (Warcab warcab : warcaby) {
+                if (warcab.getPair().equals(new Pair(war.x + 1, war.y + 1))) {
+                    dodajBlizej = false;
+                    if (war.color.equals(warcab.color)) {
+                        dodajDalej = false;
+                        break;
+                    }
+                }
+                if (warcab.getPair().equals(new Pair(war.x + 2, war.y + 2))) {
+                    dodajDalej = false;
+                }
+            }
+            if (dodajBlizej) {
+                neighbors.add(new Pair(war.x + 1, war.y + 1));
+            } else if (dodajDalej) {
+                neighbors.add(new Pair(war.x + 2, war.y + 2));
+            }
+
+            return neighbors;
+        }
 
         if (war.color.equals("bialy")) {
 //        1. (x-1, y-1)
