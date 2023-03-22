@@ -132,7 +132,7 @@ public class Checkers extends JPanel implements MouseListener{
 
             if (war.damka) {
                 g.setColor(Color.yellow);
-                g.fillOval((war.x * tileSize) + offset + tileSize / 2, (war.y * tileSize) + offset + tileSize / 2, tileSize - (4 * offset), tileSize - (4 * offset));
+                g.fillOval((war.x * tileSize) + (3 * offset), (war.y * tileSize) + (3 * offset), tileSize - (6 * offset), tileSize - (6 * offset));
             }
         }
 
@@ -213,11 +213,12 @@ public class Checkers extends JPanel implements MouseListener{
         if (neighbors.contains(mouseEnd)) {
             for (Warcab war : warcaby) {
                 if (war.getPair().equals(mouseStart)) {
-                    warcaby.remove(war);
-                    warcaby.add(new Warcab(mouseEnd.x, mouseEnd.y, war.color));
-                    if ((war.color.equals("bialy") && mouseEnd.y == 0) || (war.color.equals("czarny") && mouseEnd.y == ROWS_COLS - 1)) {
-                        war.damka = true;
+                    Warcab newWar = new Warcab(mouseEnd.x, mouseEnd.y, war.color);
+                    if ((war.color.equals("bialy") && mouseEnd.y == 0) || (war.color.equals("czarny") && mouseEnd.y == ROWS_COLS - 1) || war.damka) {
+                        newWar.damka = true;
                     }
+                    warcaby.remove(war);
+                    warcaby.add(newWar);
                     break;
                 }
             }
