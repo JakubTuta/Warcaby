@@ -176,7 +176,7 @@ public class Checkers  extends JPanel implements MouseListener {
             int y = mouseEnd.y + offY;
             Pair nowaPara = new Pair(x, y);
             for (Warcab war : warcaby) {
-                if (war.getPair().equals(nowaPara) && war.color.equals(czyjaTura)) {
+                if (war.getPair().equals(nowaPara)) {
                     warcaby.remove(war);
                     Warcab.changeNum(-1, war.color);
                     break;
@@ -212,7 +212,6 @@ public class Checkers  extends JPanel implements MouseListener {
 
     private Set<Pair> possibleMoves(Warcab war) {
         Set<Pair> neighbors = new HashSet<>();
-        Set<Pair> wymuszoneBicie = new HashSet<>();
         ArrayList<Integer> doSkipa = new ArrayList<>();
         Pair nowaPara, nowaDalszaPara;
         boolean dodajBlizej, dodajDalej;
@@ -256,11 +255,10 @@ public class Checkers  extends JPanel implements MouseListener {
                     neighbors.add(nowaPara);
                 } else if (dodajDalej) {
                     neighbors.add(nowaDalszaPara);
-                    wymuszoneBicie.add(nowaDalszaPara);
                 }
             }
         }
-        return wymuszoneBicie.isEmpty() ? neighbors : wymuszoneBicie;
+        return neighbors;
     }
 
     private class Task extends TimerTask {
