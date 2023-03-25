@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Pair {
     int x;
     int y;
@@ -13,16 +15,19 @@ public class Pair {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
+    public boolean equals(Object o) {
+        if (o == this) {
             return true;
         }
-
-        if (!(obj instanceof Pair)) {
+        if (!(o instanceof Pair p)) {
             return false;
         }
 
-        Pair other = (Pair) obj;
-        return this.x == other.x && this.y == other.y;
+        return p.x == this.x && p.y == this.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 }

@@ -2,19 +2,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.io.*;
 import java.net.*;
+import java.util.Timer;
+
 import static java.lang.System.exit;
 
 public class Checkers extends JPanel implements MouseListener{
     final int GAME_SIZE = 700;
     final int ROWS_COLS = 8;
     final int tileSize = GAME_SIZE / ROWS_COLS;
-    ArrayList<Warcab> warcaby = new ArrayList<>();
-    ArrayList<Pair> neighbors;
+    Set<Warcab> warcaby = new HashSet<>();
+    Set<Pair> neighbors;
     boolean showPossibleMoves = false;
     Pair mouseStart = new Pair(-1, -1);
     Pair mouseEnd = new Pair(-1, -1);
@@ -213,29 +213,29 @@ public class Checkers extends JPanel implements MouseListener{
         if (neighbors.contains(mouseEnd)) {
             for (Warcab war : warcaby) {
                 if (war.getPair().equals(mouseStart)) {
-                    Warcab newWar = new Warcab(mouseEnd.x, mouseEnd.y, war.color);
+                    Warcab nowyWar = new Warcab(mouseEnd.x, mouseEnd.y, war.color);
                     if ((war.color.equals("bialy") && mouseEnd.y == 0) || (war.color.equals("czarny") && mouseEnd.y == ROWS_COLS - 1) || war.damka) {
-                        newWar.damka = true;
+                        nowyWar.damka = true;
                     }
                     warcaby.remove(war);
-                    warcaby.add(newWar);
+                    warcaby.add(nowyWar);
                     break;
                 }
             }
 
-            if (Math.abs(mouseStart.x - mouseEnd.x) == 2) {
-                int midX = (mouseStart.x + mouseEnd.x) / 2;
-                int midY = (mouseStart.y + mouseEnd.y) / 2;
-                Pair midPair = new Pair(midX, midY);
-
-                for (Warcab war : warcaby) {
-                    if (war.getPair().equals(midPair)) {
-                        warcaby.remove(war);
-                        Warcab.changeNum(-1, war.color);
-                        break;
-                    }
+            int offX = mouseEnd.x > mouseStart.x ? -1 : 1;
+            int offY = mouseEnd.y > mouseStart.y ? -1 : 1;
+            int x = mouseEnd.x + offX;
+            int y = mouseEnd.y + offY;
+            Pair nowaPara = new Pair(x, y);
+            for (Warcab war : warcaby) {
+                if (war.getPair().equals(nowaPara) && war.color.equals(czyjaTura)) {
+                    warcaby.remove(war);
+                    Warcab.changeNum(-1, war.color);
+                    break;
                 }
             }
+
             if (Warcab.isGameOver()) {
                 if (Warcab.numOfWhites == 0) {
                     System.out.println("Biały wygrał");
@@ -254,189 +254,57 @@ public class Checkers extends JPanel implements MouseListener{
     @Override
     public void mouseExited(MouseEvent e) {}
 
-    private ArrayList<Pair> possibleMoves(Warcab war) {
-
-//        1.(x-1,y-1)           2.(x+1,y-1)
-//                      (x,y)
-//        3.(x-1,y+1)           4.(x+1,y+1)
-
-        ArrayList<Pair> neighbors = new ArrayList<>();
+    private Set<Pair> possibleMoves(Warcab war) {
+        Set<Pair> neighbors = new HashSet<>();
+        Set<Pair> wymuszoneBicie = new HashSet<>();
+        ArrayList<Integer> doSkipa = new ArrayList<>();
+        Pair nowaPara, nowaDalszaPara;
         boolean dodajBlizej, dodajDalej;
 
-        if(war.damka) {
-            //        1. (x-1, y-1)
-            dodajBlizej = true;
-            dodajDalej = true;
-            for (Warcab warcab : warcaby) {
-                if (warcab.getPair().equals(new Pair(war.x - 1, war.y - 1))) {
-                    dodajBlizej = false;
-                    if (war.color.equals(warcab.color)) {
-                        dodajDalej = false;
-                        break;
-                    }
-                }
-                if (warcab.getPair().equals(new Pair(war.x - 2, war.y - 2))) {
-                    dodajDalej = false;
-                }
-            }
-            if (dodajBlizej) {
-                neighbors.add(new Pair(war.x - 1, war.y - 1));
-            } else if (dodajDalej) {
-                neighbors.add(new Pair(war.x - 2, war.y - 2));
-            }
+        int maxDroga = war.damka ? 7 : 1;
+        int[] dx = {-1, 1, 1, -1};
+        int[] dy = {-1, -1, 1, 1};
 
-//        2. (x+1, y-1)
-            dodajBlizej = true;
-            dodajDalej = true;
-            for (Warcab warcab : warcaby) {
-                if (warcab.getPair().equals(new Pair(war.x + 1, war.y - 1))) {
-                    dodajBlizej = false;
-                    if (war.color.equals(warcab.color)) {
-                        dodajDalej = false;
-                        break;
-                    }
+        for (int i = 1; i <= maxDroga; i++) {
+            for (int j = 0; j < dx.length; j++) {
+                if (doSkipa.contains(j)) {
+                    continue;
                 }
-                if (warcab.getPair().equals(new Pair(war.x + 2, war.y - 2))) {
-                    dodajDalej = false;
-                }
-            }
-            if (dodajBlizej) {
-                neighbors.add(new Pair(war.x + 1, war.y - 1));
-            } else if (dodajDalej) {
-                neighbors.add(new Pair(war.x + 2, war.y - 2));
-            }
 
-            //        3. (x-1, y+1)
-            dodajBlizej = true;
-            dodajDalej = true;
-            for (Warcab warcab : warcaby) {
-                if (warcab.getPair().equals(new Pair(war.x - 1, war.y + 1))) {
-                    dodajBlizej = false;
-                    if (war.color.equals(warcab.color)) {
-                        dodajDalej = false;
-                        break;
-                    }
-                }
-                if (warcab.getPair().equals(new Pair(war.x - 2, war.y + 2))) {
-                    dodajDalej = false;
-                }
-            }
-            if (dodajBlizej) {
-                neighbors.add(new Pair(war.x - 1, war.y + 1));
-            } else if (dodajDalej) {
-                neighbors.add(new Pair(war.x - 2, war.y + 2));
-            }
+                int x = war.x + i * dx[j];
+                int y = war.y + i * dy[j];
 
-//        4. (x+1, y+1)
-            dodajBlizej = true;
-            dodajDalej = true;
-            for (Warcab warcab : warcaby) {
-                if (warcab.getPair().equals(new Pair(war.x + 1, war.y + 1))) {
-                    dodajBlizej = false;
-                    if (war.color.equals(warcab.color)) {
-                        dodajDalej = false;
-                        break;
-                    }
+                if (!war.damka && ((war.color.equals("bialy") && y > war.y) || (war.color.equals("czarny") && y < war.y))) {
+                    continue;
                 }
-                if (warcab.getPair().equals(new Pair(war.x + 2, war.y + 2))) {
-                    dodajDalej = false;
-                }
-            }
-            if (dodajBlizej) {
-                neighbors.add(new Pair(war.x + 1, war.y + 1));
-            } else if (dodajDalej) {
-                neighbors.add(new Pair(war.x + 2, war.y + 2));
-            }
 
-            return neighbors;
-        }
+                nowaPara = new Pair(x, y);
+                nowaDalszaPara = new Pair(x + dx[j], y + dy[j]);
+                dodajBlizej = true;
+                dodajDalej = true;
 
-        if (war.color.equals("bialy")) {
-//        1. (x-1, y-1)
-            dodajBlizej = true;
-            dodajDalej = true;
-            for (Warcab warcab : warcaby) {
-                if (warcab.getPair().equals(new Pair(war.x - 1, war.y - 1))) {
-                    dodajBlizej = false;
-                    if (war.color.equals(warcab.color)) {
+                for (Warcab warcab : warcaby) {
+                    if (warcab.getPair().equals(nowaPara)) {
+                        dodajBlizej = false;
+                        doSkipa.add(j);
+                        if (war.color.equals(warcab.color)) {
+                            dodajDalej = false;
+                            break;
+                        }
+                    }
+                    if (warcab.getPair().equals(nowaDalszaPara)) {
                         dodajDalej = false;
-                        break;
                     }
                 }
-                if (warcab.getPair().equals(new Pair(war.x - 2, war.y - 2))) {
-                    dodajDalej = false;
+                if (dodajBlizej) {
+                    neighbors.add(nowaPara);
+                } else if (dodajDalej) {
+                    neighbors.add(nowaDalszaPara);
+                    wymuszoneBicie.add(nowaDalszaPara);
                 }
-            }
-            if (dodajBlizej) {
-                neighbors.add(new Pair(war.x - 1, war.y - 1));
-            } else if (dodajDalej) {
-                neighbors.add(new Pair(war.x - 2, war.y - 2));
-            }
-
-//        2. (x+1, y-1)
-            dodajBlizej = true;
-            dodajDalej = true;
-            for (Warcab warcab : warcaby) {
-                if (warcab.getPair().equals(new Pair(war.x + 1, war.y - 1))) {
-                    dodajBlizej = false;
-                    if (war.color.equals(warcab.color)) {
-                        dodajDalej = false;
-                        break;
-                    }
-                }
-                if (warcab.getPair().equals(new Pair(war.x + 2, war.y - 2))) {
-                    dodajDalej = false;
-                }
-            }
-            if (dodajBlizej) {
-                neighbors.add(new Pair(war.x + 1, war.y - 1));
-            } else if (dodajDalej) {
-                neighbors.add(new Pair(war.x + 2, war.y - 2));
-            }
-        } else {
-//        3. (x-1, y+1)
-            dodajBlizej = true;
-            dodajDalej = true;
-            for (Warcab warcab : warcaby) {
-                if (warcab.getPair().equals(new Pair(war.x - 1, war.y + 1))) {
-                    dodajBlizej = false;
-                    if (war.color.equals(warcab.color)) {
-                        dodajDalej = false;
-                        break;
-                    }
-                }
-                if (warcab.getPair().equals(new Pair(war.x - 2, war.y + 2))) {
-                    dodajDalej = false;
-                }
-            }
-            if (dodajBlizej) {
-                neighbors.add(new Pair(war.x - 1, war.y + 1));
-            } else if (dodajDalej) {
-                neighbors.add(new Pair(war.x - 2, war.y + 2));
-            }
-
-//        4. (x+1, y+1)
-            dodajBlizej = true;
-            dodajDalej = true;
-            for (Warcab warcab : warcaby) {
-                if (warcab.getPair().equals(new Pair(war.x + 1, war.y + 1))) {
-                    dodajBlizej = false;
-                    if (war.color.equals(warcab.color)) {
-                        dodajDalej = false;
-                        break;
-                    }
-                }
-                if (warcab.getPair().equals(new Pair(war.x + 2, war.y + 2))) {
-                    dodajDalej = false;
-                }
-            }
-            if (dodajBlizej) {
-                neighbors.add(new Pair(war.x + 1, war.y + 1));
-            } else if (dodajDalej) {
-                neighbors.add(new Pair(war.x + 2, war.y + 2));
             }
         }
-        return neighbors;
+        return wymuszoneBicie.isEmpty() ? neighbors : wymuszoneBicie;
     }
 
     private class LiczenieCzasu extends TimerTask {
@@ -464,18 +332,26 @@ public class Checkers extends JPanel implements MouseListener{
                 }
 
                 String wejscie = in.readLine();
-                if (!wejscie.equals("Start")) {
-                    return;
+                if (wejscie.equals("Start")) {
+                    int size = Integer.parseInt(in.readLine());
+                    warcaby = new HashSet<>();
+                    for (int i = 0; i < size; i++) {
+                        int x = Integer.parseInt(in.readLine());
+                        int y = Integer.parseInt(in.readLine());
+                        String kolor = in.readLine();
+                        String isDamka = in.readLine();
+                        Warcab war = new Warcab(x, y, kolor);
+                        if(isDamka.equals("true")) {
+                            war.damka = true;
+                        }
+                        warcaby.add(war);
+                    }
+                    czyjaTura = twojKolor;
+                } else if (wejscie.equals("Czas")) {
+                    timerGraczBialy = Integer.parseInt(in.readLine());
+                    timerGraczCzarny = Integer.parseInt(in.readLine());
                 }
-                int size = Integer.parseInt(in.readLine());
-                warcaby = new ArrayList<>();
-                for (int i = 0; i < size; i++) {
-                    int x = Integer.parseInt(in.readLine());
-                    int y = Integer.parseInt(in.readLine());
-                    String kolor = in.readLine();
-                    warcaby.add(new Warcab(x, y, kolor));
-                }
-                czyjaTura = twojKolor;
+
             } catch (IOException e) {
                 System.out.println("Nie udało się odczytać danych");
                 System.out.println("Koniec programu");
@@ -508,6 +384,7 @@ public class Checkers extends JPanel implements MouseListener{
             out.println(war.getPair().x);
             out.println(war.getPair().y);
             out.println(war.color);
+            out.println(war.damka);
         }
     }
 }
