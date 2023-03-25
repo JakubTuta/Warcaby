@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6e80daee-9b07-41c5-96dd-83df6675312f" name="Changes" comment="idk">
+    <list default="true" id="6e80daee-9b07-41c5-96dd-83df6675312f" name="Changes" comment="fixed damka">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Checkers.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Checkers.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pair.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pair.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Warcab.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Warcab.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
