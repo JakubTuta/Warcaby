@@ -15,7 +15,7 @@ public class Checkers  extends JPanel implements MouseListener {
     Pair mouseStart = new Pair(0, 0);
     Pair mouseEnd = new Pair(0, 0);
 
-    String czyjaTura = "bialy";
+    String czyjaTura = "czarny";
     Timer timer;
     int timerGraczBialy = 0;
     int timerGraczCzarny = 0;
@@ -26,25 +26,27 @@ public class Checkers  extends JPanel implements MouseListener {
         timer = new Timer();
         timer.scheduleAtFixedRate(new Task(), 0, 1000);
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < ROWS_COLS; j++) {
-                if ((i + j) % 2 != 0) {
-                    warcaby.add(new Warcab(j, i, "czarny"));
-                    Warcab.changeNum(1, "czarny");
-                }
-            }
-        }
-
-        warcaby.add(new Warcab(3, 6, "czarny"));
-
-        for (int i = ROWS_COLS - 3; i < ROWS_COLS; i++) {
-            for (int j = 0; j < ROWS_COLS; j++) {
-                if ((i + j) % 2 != 0) {
-                    warcaby.add(new Warcab(j, i, "bialy"));
-                    Warcab.changeNum(1, "bialy");
-                }
-            }
-        }
+//        for (int i = 0; i < 3; i++) {
+//            for (int j = 0; j < ROWS_COLS; j++) {
+//                if ((i + j) % 2 != 0) {
+//                    warcaby.add(new Warcab(j, i, "czarny"));
+//                    Warcab.changeNum(1, "czarny");
+//                }
+//            }
+//        }
+//
+//        warcaby.add(new Warcab(3, 6, "czarny"));
+//
+//        for (int i = ROWS_COLS - 3; i < ROWS_COLS; i++) {
+//            for (int j = 0; j < ROWS_COLS; j++) {
+//                if ((i + j) % 2 != 0) {
+//                    warcaby.add(new Warcab(j, i, "bialy"));
+//                    Warcab.changeNum(1, "bialy");
+//                }
+//            }
+//        }
+        warcaby.add(new Warcab(7, 4, "bialy"));
+        warcaby.add(new Warcab(6, 3, "czarny"));
     }
 
     @Override
@@ -165,11 +167,11 @@ public class Checkers  extends JPanel implements MouseListener {
                     }
                     warcaby.remove(war);
                     warcaby.add(nowyWar);
-                    nowaTura();
                     break;
                 }
             }
 
+            boolean zbite = false;
             int offX = mouseEnd.x > mouseStart.x ? -1 : 1;
             int offY = mouseEnd.y > mouseStart.y ? -1 : 1;
             int x = mouseEnd.x + offX;
@@ -179,15 +181,20 @@ public class Checkers  extends JPanel implements MouseListener {
                 if (war.getPair().equals(nowaPara)) {
                     warcaby.remove(war);
                     Warcab.changeNum(-1, war.color);
+                    zbite = true;
                     break;
                 }
             }
-        }
-        if (Warcab.isGameOver()) {
-            if (Warcab.numOfWhites == 0) {
-                System.out.println("Czarny wygrał");
-            } else {
-                System.out.println("Bialy wygrał");
+            if(!zbite) {
+                nowaTura();
+            }
+
+            if (Warcab.isGameOver()) {
+                if (Warcab.numOfWhites == 0) {
+                    System.out.println("Czarny wygrał");
+                } else {
+                    System.out.println("Bialy wygrał");
+                }
             }
         }
 
@@ -212,6 +219,7 @@ public class Checkers  extends JPanel implements MouseListener {
 
     private Set<Pair> possibleMoves(Warcab war) {
         Set<Pair> neighbors = new HashSet<>();
+        Set<Pair> wymuszoneBicie = new HashSet<>();
         ArrayList<Integer> doSkipa = new ArrayList<>();
         Pair nowaPara, nowaDalszaPara;
         boolean dodajBlizej, dodajDalej;
@@ -255,10 +263,13 @@ public class Checkers  extends JPanel implements MouseListener {
                     neighbors.add(nowaPara);
                 } else if (dodajDalej) {
                     neighbors.add(nowaDalszaPara);
+                    if(nowaDalszaPara.x >= 0 && nowaDalszaPara.x < ROWS_COLS && nowaDalszaPara.y >= 0 && nowaDalszaPara.y < ROWS_COLS) {
+                        wymuszoneBicie.add(nowaDalszaPara);
+                    }
                 }
             }
         }
-        return neighbors;
+        return wymuszoneBicie.isEmpty() ? neighbors : wymuszoneBicie;
     }
 
     private class Task extends TimerTask {
