@@ -386,12 +386,6 @@ public class Checkers extends JPanel implements MouseListener{
     }
 
     void printData() {
-        if (twojKolor.equals("bialy")) {
-            czyjaTura = "czarny";
-        } else {
-            czyjaTura = "bialy";
-        }
-
         out.println("Start");
         out.println(warcaby.size());
         for(Warcab war : warcaby) {
