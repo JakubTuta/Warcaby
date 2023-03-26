@@ -193,6 +193,7 @@ public class Checkers  extends JPanel implements MouseListener{
                 }
             }
 
+            boolean zbite = false;
             int offX = mouseEnd.x > mouseStart.x ? -1 : 1;
             int offY = mouseEnd.y > mouseStart.y ? -1 : 1;
             int x = mouseEnd.x + offX;
@@ -202,12 +203,24 @@ public class Checkers  extends JPanel implements MouseListener{
                 if (war.getPair().equals(nowaPara)) {
                     warcaby.remove(war);
                     Warcab.changeNum(-1, war.color);
+                    zbite = true;
                     break;
                 }
+            }
+            if(!zbite) {
+                nowaTura();
             }
             printData();
         }
         repaint();
+    }
+
+    private void nowaTura() {
+        if (czyjaTura.equals("bialy")) {
+            czyjaTura = "czarny";
+        } else if (czyjaTura.equals("czarny")) {
+            czyjaTura = "bialy";
+        }
     }
 
     @Override
@@ -218,6 +231,7 @@ public class Checkers  extends JPanel implements MouseListener{
 
     private Set<Pair> possibleMoves(Warcab war) {
         Set<Pair> neighbors = new HashSet<>();
+        Set<Pair> wymuszoneBicie = new HashSet<>();
         ArrayList<Integer> doSkipa = new ArrayList<>();
         Pair nowaPara, nowaDalszaPara;
         boolean dodajBlizej, dodajDalej;
@@ -261,10 +275,13 @@ public class Checkers  extends JPanel implements MouseListener{
                     neighbors.add(nowaPara);
                 } else if (dodajDalej) {
                     neighbors.add(nowaDalszaPara);
+                    if (nowaDalszaPara.x >= 0 && nowaDalszaPara.x < ROWS_COLS && nowaDalszaPara.y >= 0 && nowaDalszaPara.y < ROWS_COLS) {
+                        wymuszoneBicie.add(nowaDalszaPara);
+                    }
                 }
             }
         }
-        return neighbors;
+        return wymuszoneBicie.isEmpty() ? neighbors : wymuszoneBicie;
     }
 
     private class CzytanieBufora extends TimerTask {
@@ -291,7 +308,7 @@ public class Checkers  extends JPanel implements MouseListener{
                         }
                         warcaby.add(war);
                     }
-                    czyjaTura = twojKolor;
+                    czyjaTura = in.readLine();
                 } else if (wejscie.equals("Czas")) {
                     timerGraczBialy = Integer.parseInt(in.readLine());
                     timerGraczCzarny = Integer.parseInt(in.readLine());
@@ -330,6 +347,7 @@ public class Checkers  extends JPanel implements MouseListener{
             out.println(war.getPair().y);
             out.println(war.color);
             out.println(war.damka);
+            out.println(czyjaTura);
         }
     }
 }
