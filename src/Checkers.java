@@ -26,27 +26,25 @@ public class Checkers  extends JPanel implements MouseListener {
         timer = new Timer();
         timer.scheduleAtFixedRate(new Task(), 0, 1000);
 
-//        for (int i = 0; i < 3; i++) {
-//            for (int j = 0; j < ROWS_COLS; j++) {
-//                if ((i + j) % 2 != 0) {
-//                    warcaby.add(new Warcab(j, i, "czarny"));
-//                    Warcab.changeNum(1, "czarny");
-//                }
-//            }
-//        }
-//
-//        warcaby.add(new Warcab(3, 6, "czarny"));
-//
-//        for (int i = ROWS_COLS - 3; i < ROWS_COLS; i++) {
-//            for (int j = 0; j < ROWS_COLS; j++) {
-//                if ((i + j) % 2 != 0) {
-//                    warcaby.add(new Warcab(j, i, "bialy"));
-//                    Warcab.changeNum(1, "bialy");
-//                }
-//            }
-//        }
-        warcaby.add(new Warcab(7, 4, "bialy"));
-        warcaby.add(new Warcab(6, 3, "czarny"));
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < ROWS_COLS; j++) {
+                if ((i + j) % 2 != 0) {
+                    warcaby.add(new Warcab(j, i, "czarny"));
+                    Warcab.changeNum(1, "czarny");
+                }
+            }
+        }
+
+        warcaby.add(new Warcab(3, 6, "czarny"));
+
+        for (int i = ROWS_COLS - 3; i < ROWS_COLS; i++) {
+            for (int j = 0; j < ROWS_COLS; j++) {
+                if ((i + j) % 2 != 0) {
+                    warcaby.add(new Warcab(j, i, "bialy"));
+                    Warcab.changeNum(1, "bialy");
+                }
+            }
+        }
     }
 
     @Override
@@ -185,7 +183,7 @@ public class Checkers  extends JPanel implements MouseListener {
                     break;
                 }
             }
-            if(!zbite) {
+            if (!zbite) {
                 nowaTura();
             }
 
@@ -263,7 +261,7 @@ public class Checkers  extends JPanel implements MouseListener {
                     neighbors.add(nowaPara);
                 } else if (dodajDalej) {
                     neighbors.add(nowaDalszaPara);
-                    if(nowaDalszaPara.x >= 0 && nowaDalszaPara.x < ROWS_COLS && nowaDalszaPara.y >= 0 && nowaDalszaPara.y < ROWS_COLS) {
+                    if (nowaDalszaPara.x >= 0 && nowaDalszaPara.x < ROWS_COLS && nowaDalszaPara.y >= 0 && nowaDalszaPara.y < ROWS_COLS) {
                         wymuszoneBicie.add(nowaDalszaPara);
                     }
                 }

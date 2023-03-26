@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6e80daee-9b07-41c5-96dd-83df6675312f" name="Changes" comment="finished game idc">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="6e80daee-9b07-41c5-96dd-83df6675312f" name="Changes" comment="final game?">
       <change beforePath="$PROJECT_DIR$/src/Checkers.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Checkers.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -67,7 +66,7 @@
       <workItem from="1679702596641" duration="1601000" />
       <workItem from="1679745590553" duration="75000" />
       <workItem from="1679747786396" duration="944000" />
-      <workItem from="1679860134404" duration="1045000" />
+      <workItem from="1679860134404" duration="1264000" />
     </task>
     <task id="LOCAL-00001" summary="wincon fixed">
       <created>1679430063015</created>
@@ -83,7 +82,14 @@
       <option name="project" value="LOCAL" />
       <updated>1679706110787</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="final game?">
+      <created>1679861203493</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1679861203493</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -103,14 +109,15 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="wincon fixed" />
     <MESSAGE value="finished game idc" />
-    <option name="LAST_COMMIT_MESSAGE" value="finished game idc" />
+    <MESSAGE value="final game?" />
+    <option name="LAST_COMMIT_MESSAGE" value="final game?" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/Checkers.java</url>
-          <line>219</line>
+          <line>217</line>
           <properties class="Checkers" method="possibleMoves">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
