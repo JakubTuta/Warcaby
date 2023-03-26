@@ -334,12 +334,6 @@ public class Checkers  extends JPanel implements MouseListener{
     }
 
     void printData() {
-        if (twojKolor.equals("bialy")) {
-            czyjaTura = "czarny";
-        } else {
-            czyjaTura = "bialy";
-        }
-
         out.println("Start");
         out.println(warcaby.size());
         for(Warcab war : warcaby) {
@@ -347,7 +341,7 @@ public class Checkers  extends JPanel implements MouseListener{
             out.println(war.getPair().y);
             out.println(war.color);
             out.println(war.damka);
-            out.println(czyjaTura);
         }
+        out.println(czyjaTura);
     }
 }
