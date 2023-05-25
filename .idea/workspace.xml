@@ -5,7 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6e80daee-9b07-41c5-96dd-83df6675312f" name="Changes" comment="final game?">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Checkers.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Checkers.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Warcab.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Warcab.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,6 +34,7 @@
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -67,6 +70,10 @@
       <workItem from="1679745590553" duration="75000" />
       <workItem from="1679747786396" duration="944000" />
       <workItem from="1679860134404" duration="1264000" />
+      <workItem from="1684857493436" duration="54000" />
+      <workItem from="1685039499979" duration="2806000" />
+      <workItem from="1685042369453" duration="587000" />
+      <workItem from="1685045357787" duration="2514000" />
     </task>
     <task id="LOCAL-00001" summary="wincon fixed">
       <created>1679430063015</created>
@@ -111,20 +118,5 @@
     <MESSAGE value="finished game idc" />
     <MESSAGE value="final game?" />
     <option name="LAST_COMMIT_MESSAGE" value="final game?" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/Checkers.java</url>
-          <line>217</line>
-          <properties class="Checkers" method="possibleMoves">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

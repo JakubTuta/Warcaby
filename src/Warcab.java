@@ -1,5 +1,4 @@
 public class Warcab {
-    int x, y;
     String color;
     Pair para;
     boolean damka = false;
@@ -7,10 +6,13 @@ public class Warcab {
     static int numOfBlacks = 0;
 
     Warcab(int x, int y, String color) {
-        this.x = x;
-        this.y = y;
         this.para = new Pair(x, y);
         this.color = color;
+    }
+
+    void move(Pair nowaPara) {
+        this.para.x = nowaPara.x;
+        this.para.y = nowaPara.y;
     }
 
     static void changeNum(int num, String color) {
