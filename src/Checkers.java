@@ -9,7 +9,7 @@ import java.util.Timer;
 
 import static java.lang.System.exit;
 
-public class Checkers  extends JPanel implements MouseListener{
+public class Checkers extends JPanel implements MouseListener{
     final int GAME_SIZE = 700;
     int ROWS_COLS;
     int tileSize;
@@ -103,7 +103,7 @@ public class Checkers  extends JPanel implements MouseListener{
             } else {
                 g.setColor(bialy_warcab);
             }
-            g.fillOval((war.x * tileSize) + offset, (war.y * tileSize) + offset, tileSize - 2 * offset, tileSize - 2 * offset);
+            g.fillOval((war.getPair().x * tileSize) + offset, (war.getPair().y * tileSize) + offset, tileSize - 2 * offset, tileSize - 2 * offset);
         }
 
         if (showPossibleMoves && neighbors != null) {
@@ -140,7 +140,7 @@ public class Checkers  extends JPanel implements MouseListener{
         int col = pos_x / tileSize;
 
         for (Warcab war : warcaby) {
-            if (war.x == col && war.y == row && war.color.equals(twojKolor)) {
+            if (war.getPair().x == col && war.getPair().y == row && war.color.equals(twojKolor)) {
                 neighbors = possibleMoves(war);
                 showPossibleMoves = true;
                 repaint();
@@ -157,7 +157,7 @@ public class Checkers  extends JPanel implements MouseListener{
         int col = pos_x / tileSize;
 
         for (Warcab war : warcaby) {
-            if (war.x == col && war.y == row && war.color.equals(czyjaTura) && czyjaTura.equals(twojKolor)) {
+            if (war.getPair().x == col && war.getPair().y == row && war.color.equals(czyjaTura) && czyjaTura.equals(twojKolor)) {
                 mouseStart.set(col, row);
                 neighbors = possibleMoves(war);
                 showPossibleMoves = true;
@@ -180,38 +180,38 @@ public class Checkers  extends JPanel implements MouseListener{
         int col = pos_x / tileSize;
         mouseEnd.set(col, row);
 
-        if (neighbors.contains(mouseEnd)) {
-            for (Warcab war : warcaby) {
-                if (war.getPair().equals(mouseStart)) {
-                    Warcab nowyWar = new Warcab(mouseEnd.x, mouseEnd.y, war.color);
-                    if ((war.color.equals("bialy") && mouseEnd.y == 0) || (war.color.equals("czarny") && mouseEnd.y == ROWS_COLS - 1) || war.damka) {
-                        nowyWar.damka = true;
-                    }
-                    warcaby.remove(war);
-                    warcaby.add(nowyWar);
-                    break;
-                }
-            }
-
-            boolean zbite = false;
-            int offX = mouseEnd.x > mouseStart.x ? -1 : 1;
-            int offY = mouseEnd.y > mouseStart.y ? -1 : 1;
-            int x = mouseEnd.x + offX;
-            int y = mouseEnd.y + offY;
-            Pair nowaPara = new Pair(x, y);
-            for (Warcab war : warcaby) {
-                if (war.getPair().equals(nowaPara)) {
-                    warcaby.remove(war);
-                    Warcab.changeNum(-1, war.color);
-                    zbite = true;
-                    break;
-                }
-            }
-            if(!zbite) {
-                nowaTura();
-            }
-            printData();
+        if(!neighbors.contains(mouseEnd)) {
+            return;
         }
+
+        for (Warcab war : warcaby) {
+            if (war.getPair().equals(mouseStart)) {
+                war.move(mouseEnd);
+                if ((war.color.equals("bialy") && mouseEnd.y == 0) || (war.color.equals("czarny") && mouseEnd.y == ROWS_COLS - 1)) {
+                    war.damka = true;
+                }
+                break;
+            }
+        }
+
+        boolean zbite = false;
+        int offX = mouseEnd.x > mouseStart.x ? -1 : 1;
+        int offY = mouseEnd.y > mouseStart.y ? -1 : 1;
+        int x = mouseEnd.x + offX;
+        int y = mouseEnd.y + offY;
+        Pair nowaPara = new Pair(x, y);
+        for (Warcab war : warcaby) {
+            if (war.getPair().equals(nowaPara)) {
+                warcaby.remove(war);
+                Warcab.changeNum(-1, war.color);
+                zbite = true;
+                break;
+            }
+        }
+        if(!zbite) {
+            nowaTura();
+        }
+        printData();
         repaint();
     }
 
@@ -246,10 +246,10 @@ public class Checkers  extends JPanel implements MouseListener{
                     continue;
                 }
 
-                int x = war.x + i * dx[j];
-                int y = war.y + i * dy[j];
+                int x = war.getPair().x + i * dx[j];
+                int y = war.getPair().y + i * dy[j];
 
-                if (!war.damka && ((war.color.equals("bialy") && y > war.y) || (war.color.equals("czarny") && y < war.y))) {
+                if (!war.damka && ((war.color.equals("bialy") && y > war.getPair().y) || (war.color.equals("czarny") && y < war.getPair().y))) {
                     continue;
                 }
 
